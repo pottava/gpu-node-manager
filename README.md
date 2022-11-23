@@ -1,1 +1,1 @@
-# gpu-node-manager
+# GPU node manager
