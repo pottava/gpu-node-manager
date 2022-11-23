@@ -8,7 +8,9 @@ module:testrunner
 
 
 GET     /                                       App.Index
-GET     /App/Hello                              App.Hello
+GET     /login                                  App.Login
+
+GET     /firestore                              GoogleCloud.Firestore
 
 # Ignore favicon requests
 GET     /favicon.ico                            404

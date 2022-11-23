@@ -1,3 +1,6 @@
+target/
 test-results/
 tmp/
 routes/
+public/js/app/firebase.js
+key.json
