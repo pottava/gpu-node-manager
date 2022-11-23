@@ -9,8 +9,12 @@ module:testrunner
 
 GET     /                                       App.Index
 GET     /login                                  App.Login
+GET     /health                                 App.Health
 
-GET     /firestore                              GoogleCloud.Firestore
+GET     /notebooks                              Notebooks.Index
+GET     /notebooks/new                          Notebooks.Create
+GET     /api/notebooks                          Notebooks.ListAPI
+POST    /api/notebooks                          Notebooks.CreateAPI
 
 # Ignore favicon requests
 GET     /favicon.ico                            404

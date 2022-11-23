@@ -19,6 +19,9 @@ gcloud iam service-accounts create firestore-client \
 gcloud projects add-iam-policy-binding "${project_id}" \
     --member "serviceAccount:firestore-client@${project_id}.iam.gserviceaccount.com" \
     --role "roles/datastore.user"
+gcloud projects add-iam-policy-binding "${project_id}" \
+    --member "serviceAccount:firestore-client@${project_id}.iam.gserviceaccount.com" \
+    --role "roles/notebooks.admin"
 gcloud iam service-accounts keys create src/key.json \
     --iam-account "firestore-client@${project_id}.iam.gserviceaccount.com"
 ```
@@ -35,7 +38,7 @@ gcloud firestore databases create --region "asia-northeast1"
 [認証を Firebase で](https://firebase.google.com/docs/auth)行います。
 
 - 認証としてメールアドレス / パスワードを有効化
-- プロジェクトの設定から firebase の設定を src/public/js/app/firebase.js に保存します
+- プロジェクトの設定から確認できる内容を src/public/js/app/firebase.js に保存
 
 ```sh
 firebase.initializeApp({

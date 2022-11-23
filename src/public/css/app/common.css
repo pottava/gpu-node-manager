@@ -1,0 +1,10 @@
+
+.signedin {
+    display: none;
+}
+.card .card-header {
+    background-color: #F0F0F5;
+}
+.card .card-body {
+    padding: 5px 0 20px 20px;
+}

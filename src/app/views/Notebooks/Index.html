@@ -1,0 +1,17 @@
+{{set . "title" "Jupyter ノートブック 一覧"}}
+{{append . "scripts" "/public/js/app/notebooks/index.js"}}
+{{template "header.html" .}}
+
+<div style="float: right;margin: 20px 50px 0 0;">
+  <button type="button" class="btn btn-primary"
+      onclick="location.href='/notebooks/new'">
+    <span>新規作成</span>
+  </button>
+</div>
+
+<div class="container">
+  <H1>Jupyter ノートブック</H1><br>
+  <ul id="results" class="list-group"></ul>
+</div>
+
+{{template "footer.html" .}}

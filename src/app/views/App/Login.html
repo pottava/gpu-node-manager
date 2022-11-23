@@ -1,8 +1,7 @@
 {{set . "title" "Login"}}
-{{append . "scripts" "https://www.gstatic.com/firebasejs/ui/6.0.2/firebase-ui-auth__ja.js"}}
-{{append . "scripts" "/public/js/app/firebase.js"}}
-{{append . "scripts" "/public/js/app/login.js"}}
 {{append . "styles" "https://www.gstatic.com/firebasejs/ui/6.0.2/firebase-ui-auth.css"}}
+{{append . "scripts" "https://www.gstatic.com/firebasejs/ui/6.0.2/firebase-ui-auth__ja.js"}}
+{{append . "scripts" "/public/js/app/login.js"}}
 {{template "header.html" .}}
 
 <div id="firebase-auth" style="margin: 50px 0;"></div>
