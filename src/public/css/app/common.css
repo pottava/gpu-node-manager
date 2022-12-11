@@ -1,6 +1,16 @@
 
-.signedin {
+.signedin, .signedout {
     display: none;
+}
+.navbar {
+    min-height: 62px;
+}
+.material-symbols-outlined {
+    font-variation-settings:
+    'FILL' 0,
+    'wght' 400,
+    'GRAD' 0,
+    'opsz' 48
 }
 .card .card-header {
     background-color: #F0F0F5;

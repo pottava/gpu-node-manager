@@ -54,6 +54,12 @@ func CreateNotebook(ctx context.Context, name, email, menu string) error {
 			Type:      notebookspb.Instance_NVIDIA_TESLA_A100,
 			CoreCount: 1,
 		}
+	case "a100-02": // NVIDIA A100 4 基 + Intel 24 vCPU
+		req.Instance.MachineType = "a2-highgpu-4g"
+		req.Instance.AcceleratorConfig = &notebookspb.Instance_AcceleratorConfig{
+			Type:      notebookspb.Instance_NVIDIA_TESLA_A100,
+			CoreCount: 4,
+		}
 	}
 	_, err = client.CreateInstance(ctx, req)
 	return err
@@ -129,4 +135,43 @@ func DescribeManagedNotebook(ctx context.Context, name string) (*notebookspb.Run
 		Name: fmt.Sprintf("projects/%s/locations/%s/runtimes/%s", ProjectID, Location, name),
 	}
 	return client.GetRuntime(ctx, req)
+}
+
+func StartManagedNotebook(ctx context.Context, name string) error {
+	client, err := notebooks.NewManagedNotebookClient(ctx, clientOption())
+	if err != nil {
+		return err
+	}
+	defer client.Close()
+
+	_, err = client.StartRuntime(ctx, &notebookspb.StartRuntimeRequest{
+		Name: fmt.Sprintf("projects/%s/locations/%s/runtimes/%s", ProjectID, Location, name),
+	})
+	return err
+}
+
+func StopManagedNotebook(ctx context.Context, name string) error {
+	client, err := notebooks.NewManagedNotebookClient(ctx, clientOption())
+	if err != nil {
+		return err
+	}
+	defer client.Close()
+
+	_, err = client.StopRuntime(ctx, &notebookspb.StopRuntimeRequest{
+		Name: fmt.Sprintf("projects/%s/locations/%s/runtimes/%s", ProjectID, Location, name),
+	})
+	return err
+}
+
+func DeleteManagedNotebook(ctx context.Context, name string) error {
+	client, err := notebooks.NewManagedNotebookClient(ctx, clientOption())
+	if err != nil {
+		return err
+	}
+	defer client.Close()
+
+	_, err = client.DeleteRuntime(ctx, &notebookspb.DeleteRuntimeRequest{
+		Name: fmt.Sprintf("projects/%s/locations/%s/runtimes/%s", ProjectID, Location, name),
+	})
+	return err
 }

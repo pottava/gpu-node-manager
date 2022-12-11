@@ -1,19 +1,31 @@
 
 window.authOkCallback = getNotebooks;
 
-function getNotebooks(token) {
+let idToken = false;
+function getNotebooks (token) {
+  idToken = token;
+
   axios
     .get(window.apiBaseURL+'/api/notebooks', {
-      headers: {Authorization: `Bearer ${token}`}
+      headers: {Authorization: `Bearer ${idToken}`}
     })
     .then(response => {
-      var html = '';
-      var reload = false;
+      let html = '';
+      let reload = false;
 
-      response.data.forEach((item, idx) => {
-        reload |= (item.state != 'ACTIVE');
+      response.data.sort((a, b) => {
+        if (a.created_at < b.created_at) {
+          return 1;
+        }
+        if (a.created_at > b.created_at) {
+          return -1;
+        }
+        return 0;
 
-        var menu = '';
+      }).forEach((item, idx) => {
+        reload |= (item.state != 'ACTIVE') && (item.state != 'DELETED');
+
+        let menu = '';
         switch (item.menu) {
           case 't4-01': menu = 'NVIDIA T4 1 基 + Intel 2 vCPU'; break;
           case 't4-02': menu = 'NVIDIA T4 1 基 + Intel 4 vCPU'; break;
@@ -36,17 +48,60 @@ function getNotebooks(token) {
               } else {
                 html += '接続先: -';
               }
-              html += '<br>';
-              html += '<button class="btn btn-secondary" data-toggle="modal" data-target="#notebook-modal"';
-                html += 'data-menu="' + item.runtime + '" style="margin-top: 10px;"><span>停止</span></button>&nbsp;&nbsp;';
-              html += '<button class="btn btn-danger" data-toggle="modal" data-target="#notebook-modal"';
-                html += 'data-menu="' + item.runtime + '" style="margin-top: 10px;"><span>削除</span></button>';
+              html += '<br>作成: '+ item.created_at + '<br>';
+
+              switch (item.state) {
+              case 'ACTIVE':
+                html += '<br>';
+                html += '<button class="btn btn-secondary" data-toggle="modal" data-target="#notebook-modal"';
+                  html += 'data-type="stop" data-menu="' + item.runtime + '" style="margin-top: 10px;">';
+                  html += '<span>停止</span></button>&nbsp;&nbsp;';
+                html += '<button class="btn btn-danger" data-toggle="modal" data-target="#notebook-modal"';
+                  html += 'data-type="delete" data-menu="' + item.runtime + '" style="margin-top: 10px;">';
+                  html += '<span>削除</span></button>';
+                break;
+              case 'STOPPED':
+                html += '<br>';
+                html += '<button class="btn btn-secondary" data-toggle="modal" data-target="#notebook-modal"';
+                  html += 'data-type="start" data-menu="' + item.runtime + '" style="margin-top: 10px;">';
+                  html += '<span>再開</span></button>&nbsp;&nbsp;';
+                break;
+              }
             html += '</div>';
           html += '</div>';
         html += '</div>';
       });
       $("#results").html(html);
-      if (reload) setTimeout(function(){getNotebooks(token);}, 5000);
+      if (reload) setTimeout(function(){getNotebooks(idToken);}, 10*1000);
     })
     .catch(error => console.log(error));
 }
+
+$(document).on('show.bs.modal','#notebook-modal', function (e) {
+  const target = $(e.relatedTarget);
+  $('#request-type').val(target.data('type'));
+  $('#notebook-id').val(target.data('menu'));
+  $('#notebook h4').text(target.closest('.card').find('.card-header button').text());
+  $('#notebook span').text(target.find('span').text());
+});
+
+$(document).on("click", "#notebook-modal .btn-primary", function() {
+  $('#notebook-modal').modal('hide');
+
+  const params = {id: $('#notebook-id').val()};
+  const option = {Authorization: `Bearer ${idToken}`};
+  switch ($('#request-type').val()) {
+  case 'delete':
+    axios
+      .delete(window.apiBaseURL+'/api/notebooks', {headers: option, data: params})
+      .then(_ => location.href = '/notebooks')
+      .catch(error => console.log(error));
+    break;
+  default:
+    params["action"] = $('#request-type').val();
+    axios
+      .put(window.apiBaseURL+'/api/notebooks', params, {headers: option})
+      .then(_ => location.href = '/notebooks')
+      .catch(error => console.log(error));
+  }
+});

@@ -1,5 +1,5 @@
 
-var idToken = false;
+let idToken = false;
 window.authOkCallback = function (token) {
   idToken = token;
 };

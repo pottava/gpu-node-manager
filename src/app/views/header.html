@@ -13,6 +13,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.13.0/firebase-auth-compat.js"></script>
     <script src="/public/js/app/firebase.js"></script>
     <script src="/public/js/app/config.js"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
     <link rel="stylesheet" type="text/css" href="/public/css/app/common.css">
     {{range .styles}}
       <link rel="stylesheet" type="text/css" href="{{.}}">
@@ -25,23 +26,76 @@
       };
       window.authNgCallback = window.authNgCallback || function(error) {
         switch (location.pathname) {
-          case '/': break;
+          case '/': location.href = '/login'; break;
           case '/login': break;
           default: location.href = '/';
         }
       };
       firebase.auth().onAuthStateChanged((user) => {
         if (user) {
-          $('#sign-in').hide();
+          $('.signedout').hide();
           $('.signedin').fadeIn();
           user.getIdToken(true).then(authOkCallback).catch(authNgCallback);
         } else {
-          $('#sign-in').show();
+          $('.signedout').fadeIn();
           $('.signedin').hide();
           authNgCallback && authNgCallback();
         }
       });
+      function signout() {
+        firebase.auth().signOut();
+      }
     </script>
     <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
   </head>
   <body>
+    <div>
+      <nav class="navbar navbar-default">
+        <div class="container-fluid">
+          <div class="navbar-header">
+            <a class="navbar-brand" href="/">
+              <span class="material-symbols-outlined">
+              home
+              </span>
+            </a>
+          </div>
+          <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="signedin nav navbar-nav">
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                  <span class="material-symbols-outlined">
+                  menu
+                  </span>
+                </a>
+                <ul class="dropdown-menu">
+                  <h6 class="dropdown-header">Jupyter ノートブック</h6>
+                  <li><a href="/notebooks">&nbsp;&nbsp;一覧</a></li>
+                  <li><a href="/notebooks/new">&nbsp;&nbsp;新規作成</a></li>
+                  <li role="separator" class="divider"></li>
+                  <h6 class="dropdown-header">GPU ワークステーション</h6>
+                  <li><a>&nbsp;&nbsp;一覧</a></li>
+                  <li role="separator" class="divider"></li>
+                  <h6 class="dropdown-header">長期実行ジョブ投入</h6>
+                  <li><a>&nbsp;&nbsp;一覧</a></li>
+                </ul>
+              </li>
+            </ul>
+            <ul class="signedin nav navbar-nav navbar-right">
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                  <span class="material-symbols-outlined">
+                  settings
+                  </span>
+                </a>
+                <ul class="dropdown-menu">
+                  <li><a>環境ログイン用 Google アカウント</a></li>
+                  <li><a>環境ログイン用 SSH 鍵</a></li>
+                  <li class="divider" role="separator"></li>
+                  <li><a onclick="signout()">ログアウト</a></li>
+                </ul>
+              </li>
+            </ul>
+          </div><!-- /.navbar-collapse -->
+        </div><!-- /.container-fluid -->
+      </nav>
+    </div>

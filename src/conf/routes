@@ -15,6 +15,8 @@ GET     /notebooks                              Notebooks.Index
 GET     /notebooks/new                          Notebooks.Create
 GET     /api/notebooks                          Notebooks.ListAPI
 POST    /api/notebooks                          Notebooks.CreateAPI
+PUT     /api/notebooks                          Notebooks.UpdateAPI
+DELETE  /api/notebooks                          Notebooks.DeleteAPI
 
 # Ignore favicon requests
 GET     /favicon.ico                            404

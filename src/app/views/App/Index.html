@@ -2,39 +2,13 @@
 {{append . "scripts" "/public/js/app/index.js"}}
 {{template "header.html" .}}
 
-<div style="float: right;margin: 20px 50px 0 0;">
-  <button type="button" id="sign-in" class="btn btn-primary"
-      onclick="location.href='/login'" style="display: none;">
-    <span>ログイン</span>
-  </button>
-  <button type="button" class="btn btn-light signedin"
-      onclick="signout()" style="display: none;">
-    <span>ログアウト</span>
-  </button>
-</div>
-
-<div class="container">
-  <H1>作業環境管理</H1>
+<div class="signedin container">
+  <H3>GPU 作業環境の管理</H3>
   <br>
-  <div class="signedin">
-    <h2>GPU あり</h2>
+  <div>
     <ul class="list-group">
       <li class="list-group-item">
         <a href="/notebooks">Jupyter ノートブック</a>
-      </li>
-      <li class="list-group-item">
-        <span>GPU ワークステーション</span>
-      </li>
-      <li class="list-group-item">
-        <span>長期実行ジョブ投入 ..</span>
-      </li>
-    </ul>
-  </div>
-  <div class="signedin">
-    <h2>GPU なし</h2>
-    <ul class="list-group">
-      <li class="list-group-item">
-        <span>Jupyter ノートブック</span>
       </li>
       <li class="list-group-item">
         <span>GPU ワークステーション</span>

@@ -20,7 +20,7 @@ var (
 )
 
 func init() {
-	if candidate, found := os.LookupEnv("GOOGLE_CLOUD_PROJECT_ID"); found {
+	if candidate, found := os.LookupEnv("GOOGLE_CLOUD_PROJECT"); found {
 		ProjectID = candidate
 	}
 	if candidate, found := os.LookupEnv("GOOGLE_CLOUD_LOCATION"); found {
