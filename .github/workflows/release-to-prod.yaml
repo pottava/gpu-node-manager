@@ -1,0 +1,41 @@
+name: Release to prod
+
+on:
+  push:
+    tags:
+    - "*"
+
+env:
+  GOOGLECLOUD_REGION: "asia-northeast1"
+
+jobs:
+  tests:
+    name: Tests
+    uses: ./.github/workflows/tests.yaml
+
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - id: 'auth'
+      uses: 'google-github-actions/auth@v1'
+      with:
+        credentials_json: '${{ secrets.GOOGLECLOUD_SA_KEY }}'
+
+    - name: 'Set up Cloud SDK'
+      uses: 'google-github-actions/setup-gcloud@v1'
+
+    - name: 'Update the .gitignore'
+      run: echo -e 'target/\ntest-results/\ntmp/\nroutes/\nkey.json' > src/.gitignore
+
+    - name: 'Update the API base URL'
+      run: echo "window.apiBaseURL = \"$(gcloud run services describe prod --region ${{ env.GOOGLECLOUD_REGION }} --format 'value(status.address.url)' )\";" > src/public/js/app/config.js
+
+    - name: 'Create the firebase.js'
+      run: echo "${{ env.GOOGLECLOUD_FIREBASE }}" > src/public/js/app/firebase.js
+
+    - name: 'Release to Prod'
+      run: gcloud run deploy prod --region ${{ env.GOOGLECLOUD_REGION }} --source src --service-account "app-client@${{ secrets.GOOGLECLOUD_PROJECT }}.iam.gserviceaccount.com"
