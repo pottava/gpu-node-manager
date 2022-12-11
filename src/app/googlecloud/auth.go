@@ -3,7 +3,6 @@ package googlecloud
 import (
 	"encoding/json"
 	"errors"
-	"net/http"
 	"os"
 	"strings"
 
@@ -29,7 +28,7 @@ func init() {
 }
 
 func clientOption() option.ClientOption {
-	co := option.WithHTTPClient(http.DefaultClient)
+	co := option.WithGRPCConnectionPool(10)
 	if _, err := os.Stat("key.json"); !errors.Is(err, os.ErrNotExist) {
 		co = option.WithCredentialsFile("key.json")
 	}
@@ -37,9 +36,17 @@ func clientOption() option.ClientOption {
 }
 
 func Auth(r *revel.Request) (*auth.Token, error) {
-	app, err := firebase.NewApp(r.Context(), nil, clientOption())
-	if err != nil {
-		return nil, err
+	var app *firebase.App
+	if _, err := os.Stat("key.json"); !errors.Is(err, os.ErrNotExist) {
+		app, err = firebase.NewApp(r.Context(), nil, option.WithCredentialsFile("key.json"))
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		app, err = firebase.NewApp(r.Context(), nil)
+		if err != nil {
+			return nil, err
+		}
 	}
 	client, err := app.Auth(r.Context())
 	if err != nil {

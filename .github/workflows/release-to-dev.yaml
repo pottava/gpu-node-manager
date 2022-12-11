@@ -35,7 +35,7 @@ jobs:
       run: echo "window.apiBaseURL = \"$(gcloud run services describe dev --region ${{ env.GOOGLECLOUD_REGION }} --format 'value(status.address.url)' )\";" > src/public/js/app/config.js
 
     - name: 'Create the firebase.js'
-      run: echo "${{ env.GOOGLECLOUD_FIREBASE }}" > src/public/js/app/firebase.js
+      run: echo "${{ secrets.GOOGLECLOUD_FIREBASE }}" > src/public/js/app/firebase.js
 
     - name: 'Release to Dev'
       run: gcloud run deploy dev --region ${{ env.GOOGLECLOUD_REGION }} --source src --service-account "app-client@${{ secrets.GOOGLECLOUD_PROJECT }}.iam.gserviceaccount.com"

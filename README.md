@@ -31,8 +31,6 @@ gcloud projects add-iam-policy-binding "${project_id}" \
 gcloud projects add-iam-policy-binding "${project_id}" \
     --member "serviceAccount:app-client@${project_id}.iam.gserviceaccount.com" \
     --role "roles/datastore.user"
-gcloud iam service-accounts keys create src/key.json \
-    --iam-account "app-client@${project_id}.iam.gserviceaccount.com"
 ```
 
 ### Cloud Firestore
@@ -86,6 +84,8 @@ gcloud run services add-iam-policy-binding prod --region "asia-northeast1" \
 
 ```sh
 go install github.com/revel/cmd/revel@latest
+export GOOGLE_CLOUD_PROJECT=$( gcloud config get-value project )
+gcloud auth application-default login
 revel run -a src
 ```
 
