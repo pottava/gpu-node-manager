@@ -4,9 +4,12 @@ import (
 	"time"
 )
 
-const format = "2006 年 01 月 02 日 15:04:05"
+var (
+	Date string
+	jst  *time.Location
+)
 
-var jst *time.Location
+const format = "2006 年 01 月 02 日 15:04:05"
 
 func init() {
 	jst, _ = time.LoadLocation("Asia/Tokyo")

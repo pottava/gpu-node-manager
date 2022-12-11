@@ -43,7 +43,7 @@ function getNotebooks (token) {
             html += '<div class="card-body">';
               html += '種別: '+ menu + '<br>';
               html += '状態: '+ item.state + '<br>';
-              if (item.proxyUri) {
+              if (item.state == 'ACTIVE' && item.proxyUri) {
                 html += '接続先: <a href="https://' + item.proxyUri + '/" target="_blank">https://'+ item.proxyUri + '/</a>';
               } else {
                 html += '接続先: -';

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/pottava/gpu-node-manager/src/app/util"
 	"github.com/revel/revel"
 )
 
@@ -16,7 +17,11 @@ func (c App) Health() revel.Result {
 	if candidate, found := os.LookupEnv("K_REVISION"); found {
 		revision = candidate
 	}
-	return c.RenderText(fmt.Sprintf("Revision: %s", revision))
+	if len(util.Date) == 0 {
+		return c.RenderText(fmt.Sprintf("Revision: %s\n", revision))
+	}
+	return c.RenderText(fmt.Sprintf(
+		"Revision: %s (built at %s)\n", revision, util.Date))
 }
 
 func (c App) Login() revel.Result {
