@@ -1,9 +1,4 @@
 
-let idToken = false;
-window.authOkCallback = function (token) {
-  idToken = token;
-};
-
 $(document).on('show.bs.modal','#notebook-modal', function (e) {
   const target = $(e.relatedTarget);
   $('#notebook-menu-id').val(target.data('menu'));

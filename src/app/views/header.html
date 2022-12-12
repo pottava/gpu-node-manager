@@ -31,17 +31,42 @@
           default: location.href = '/';
         }
       };
-      firebase.auth().onAuthStateChanged((user) => {
+      let idToken;
+      firebase.auth().onAuthStateChanged(user => {
         if (user) {
           $('.signedout').hide();
           $('.signedin').fadeIn();
           $('#user-name').text(user.email);
-          user.getIdToken(true).then(authOkCallback).catch(authNgCallback);
+
+          user.getIdToken(true).then(function (token) {
+            authOkCallback && authOkCallback(token);
+            idToken = token;
+            axios
+              .get(window.apiBaseURL+'/api/context', {
+                headers: {Authorization: `Bearer ${idToken}`}
+              })
+              .then(res => {
+                $('#project-id').val(res.data.prj);
+                $('#app-revision').val(res.data.rev);
+              })
+              .catch(error => console.log(error));
+          }).catch(authNgCallback);
         } else {
           $('.signedout').fadeIn();
           $('.signedin').hide();
           authNgCallback && authNgCallback();
         }
+      });
+      $(document).on('show.bs.modal','#reset-password', function (e) {
+        const option = {headers: {Authorization: `Bearer ${idToken}`}};
+        axios
+          .post(window.apiBaseURL+'/api/passwords', {}, option)
+          .then(res => {
+            let link = res.data.link.substring(0, res.data.link.indexOf('?'));
+            $('#password-reset-link').html('<a href="'+res.data.link+
+                '" target="_blank">'+link+'?mode=...</a>');
+          })
+          .catch(error => console.log(error));
       });
       function signout() {
         firebase.auth().signOut();
@@ -50,6 +75,8 @@
     <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
   </head>
   <body>
+    <input id="project-id" type="hidden">
+    <input id="app-revision" type="hidden">
     <div>
       <nav class="navbar navbar-default">
         <div class="container-fluid">
@@ -89,9 +116,10 @@
                   </span>
                 </a>
                 <ul class="dropdown-menu">
-                  <li><a>環境ログイン用 Google アカウント</a></li>
+                  <li><a href="/members">環境ログイン用 Google アカウント</a></li>
                   <li><a>環境ログイン用 SSH 鍵</a></li>
                   <li class="divider" role="separator"></li>
+                  <li><a data-toggle="modal" data-target="#reset-password">パスワード再設定</a></li>
                   <li><a onclick="signout()">ログアウト</a></li>
                 </ul>
               </li>
@@ -103,4 +131,25 @@
           </div><!-- /.navbar-collapse -->
         </div><!-- /.container-fluid -->
       </nav>
+    </div>
+    <div class="modal fade" id="reset-password" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+                  style="float: right;display: block;">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            <h4 class="modal-title">パスワード再設定</h4>
+          </div>
+          <div class="modal-body">
+            パスワード再設定のためのリンクを生成しています。<br><br>
+            <span id="password-reset-link" style="font-size: 1.8rem;
+              display: block;padding: 0 0 30px 0;">少々お待ちください。</span>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
     </div>

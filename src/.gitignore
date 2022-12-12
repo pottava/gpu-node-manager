@@ -2,6 +2,6 @@ target/
 test-results/
 tmp/
 routes/
-public/js/app/firebase.js
+public/js/app/*firebase.js
 *key.json
 todo.md

@@ -3,7 +3,6 @@ package controllers
 import (
 	"errors"
 	"fmt"
-	"log"
 	"net/http"
 	"regexp"
 	"strings"
@@ -98,10 +97,13 @@ func (c Notebooks) CreateAPI() revel.Result {
 	}{}
 	c.Params.BindJSON(&params)
 
-	log.Printf("projects/%s/locations/%s", util.ProjectID(), util.Location)
-
 	if err = gc.CreateManagedNotebook(ctx, name, email, params.Menu); err != nil {
 		c.Log.Errorf("Failed to create a notebook: %v", err)
+		c.Response.SetStatus(http.StatusInternalServerError)
+		return c.RenderError(errors.New("内部エラー"))
+	}
+	if err = gc.BindRole(c.Request, "user:"+email, "roles/notebooks.runner"); err != nil {
+		c.Log.Errorf("Failed to bind a role to the user: %v", err)
 		c.Response.SetStatus(http.StatusInternalServerError)
 		return c.RenderError(errors.New("内部エラー"))
 	}

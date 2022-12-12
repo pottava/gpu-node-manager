@@ -21,25 +21,13 @@ func clientOption() option.ClientOption {
 }
 
 func Auth(r *revel.Request) (*auth.Token, error) {
-	var app *firebase.App
-	if _, err := os.Stat("key.json"); !errors.Is(err, os.ErrNotExist) {
-		app, err = firebase.NewApp(r.Context(), nil, option.WithCredentialsFile("key.json"))
-		if err != nil {
-			return nil, err
-		}
-	} else {
-		app, err = firebase.NewApp(r.Context(), nil)
-		if err != nil {
-			return nil, err
-		}
-	}
-	client, err := app.Auth(r.Context())
-	if err != nil {
-		return nil, err
-	}
 	tokens := strings.Split(r.Header.Get("Authorization"), " ")
 	if len(tokens) != 2 {
 		return nil, errors.New("invalid token")
+	}
+	client, err := authClient(r)
+	if err != nil {
+		return nil, err
 	}
 	token, err := client.VerifyIDToken(r.Context(), strings.TrimSpace(tokens[1]))
 	if err != nil {
@@ -49,6 +37,21 @@ func Auth(r *revel.Request) (*auth.Token, error) {
 		return nil, errors.New("unknown provider")
 	}
 	return token, nil
+}
+
+func authClient(r *revel.Request) (*auth.Client, error) {
+	app, err := firebaseApp(r)
+	if err != nil {
+		return nil, err
+	}
+	return app.Auth(r.Context())
+}
+
+func firebaseApp(r *revel.Request) (*firebase.App, error) {
+	if _, err := os.Stat("key.json"); !errors.Is(err, os.ErrNotExist) {
+		return firebase.NewApp(r.Context(), nil, option.WithCredentialsFile("key.json"))
+	}
+	return firebase.NewApp(r.Context(), nil)
 }
 
 func VerifiedEmail(token *auth.Token) string {
@@ -61,4 +64,12 @@ func VerifiedEmail(token *auth.Token) string {
 		return ""
 	}
 	return emails[0]
+}
+
+func PasswordResetLink(r *revel.Request, email string) (string, error) {
+	client, err := authClient(r)
+	if err != nil {
+		return "", err
+	}
+	return client.PasswordResetLink(r.Context(), email)
 }

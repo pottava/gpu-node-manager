@@ -1,13 +1,10 @@
 
 window.authOkCallback = getNotebooks;
 
-let idToken = false;
 function getNotebooks (token) {
-  idToken = token;
-
   axios
     .get(window.apiBaseURL+'/api/notebooks', {
-      headers: {Authorization: `Bearer ${idToken}`}
+      headers: {Authorization: `Bearer ${token}`}
     })
     .then(response => {
       let html = '';
@@ -65,6 +62,9 @@ function getNotebooks (token) {
                 html += '<button class="btn btn-secondary" data-toggle="modal" data-target="#notebook-modal"';
                   html += 'data-type="start" data-menu="' + item.runtime + '" style="margin-top: 10px;">';
                   html += '<span>再開</span></button>&nbsp;&nbsp;';
+                html += '<button class="btn btn-danger" data-toggle="modal" data-target="#notebook-modal"';
+                  html += 'data-type="delete" data-menu="' + item.runtime + '" style="margin-top: 10px;">';
+                  html += '<span>削除</span></button>';
                 break;
               }
             html += '</div>';
@@ -72,7 +72,7 @@ function getNotebooks (token) {
         html += '</div>';
       });
       $("#results").html(html);
-      if (reload) setTimeout(function(){getNotebooks(idToken);}, 10*1000);
+      if (reload) setTimeout(function(){getNotebooks(token);}, 10*1000);
     })
     .catch(error => console.log(error));
 }

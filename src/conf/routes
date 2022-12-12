@@ -9,6 +9,8 @@ module:testrunner
 
 GET     /                                       App.Index
 GET     /login                                  App.Login
+GET     /api/context                            App.ContextAPI
+POST    /api/passwords                          App.PasswordResetAPI
 GET     /health                                 App.Health
 
 GET     /notebooks                              Notebooks.Index
