@@ -14,8 +14,6 @@ RUN revel build --application-path . --target-path /tmp/app -m prod \
     -X "${APP_PACKAGE}/src/app/util.Date=$( date +%Y-%m-%d --utc )"
 
 FROM alpine:3.17
-RUN apk --no-cache add bash ca-certificates tzdata && \
-    cp /usr/share/zoneinfo/Asia/Tokyo /etc/localtime && \
-    apk del tzdata
+RUN apk --no-cache add bash ca-certificates tzdata
 COPY --from=builder /tmp/app /app
 ENTRYPOINT ["/app/run.sh"]
