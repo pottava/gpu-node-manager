@@ -1,7 +1,6 @@
 package googlecloud
 
 import (
-	"context"
 	"encoding/json"
 	"errors"
 	"os"
@@ -12,31 +11,6 @@ import (
 	"github.com/revel/revel"
 	"google.golang.org/api/option"
 )
-
-var (
-	ProjectID string
-	Location  = "asia-northeast1"
-	Zone      = "asia-northeast1-c"
-)
-
-func init() {
-	if candidate, found := os.LookupEnv("GOOGLE_CLOUD_PROJECT"); found {
-		ProjectID = candidate
-	} else {
-		meta := InstanceMetadata(context.Background())
-		if value, ok := meta["project_id"]; ok {
-			ProjectID = value
-		}
-	}
-	if candidate, found := os.LookupEnv("GOOGLE_CLOUD_LOCATION"); found {
-		Location = candidate
-	} else {
-		meta := InstanceMetadata(context.Background())
-		if value, ok := meta["region"]; ok {
-			Location = value
-		}
-	}
-}
 
 func clientOption() option.ClientOption {
 	co := option.WithGRPCConnectionPool(10)

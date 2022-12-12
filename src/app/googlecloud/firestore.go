@@ -9,6 +9,7 @@ import (
 
 	"cloud.google.com/go/firestore"
 	"github.com/go-openapi/swag"
+	"github.com/pottava/gpu-node-manager/src/app/util"
 	"google.golang.org/api/iterator"
 )
 
@@ -37,8 +38,8 @@ func GetNotebook(ctx context.Context, email, runtime string) (*Notebook, error) 
 
 func GetNotebooks(ctx context.Context, email string) ([]*Notebook, error) {
 	projectID := firestore.DetectProjectID
-	if !swag.IsZero(ProjectID) {
-		projectID = ProjectID
+	if !swag.IsZero(projectID) {
+		projectID = util.ProjectID()
 	}
 	client, err := firestore.NewClient(ctx, projectID, clientOption())
 	if err != nil {
@@ -70,8 +71,8 @@ func GetNotebooks(ctx context.Context, email string) ([]*Notebook, error) {
 
 func SaveNotebook(ctx context.Context, name, email, menu string) error {
 	projectID := firestore.DetectProjectID
-	if !swag.IsZero(ProjectID) {
-		projectID = ProjectID
+	if !swag.IsZero(projectID) {
+		projectID = util.ProjectID()
 	}
 	client, err := firestore.NewClient(ctx, projectID, clientOption())
 	if err != nil {
@@ -94,8 +95,8 @@ func SaveNotebook(ctx context.Context, name, email, menu string) error {
 
 func UpdateNotebook(ctx context.Context, ID string, updates map[string]interface{}) error {
 	projectID := firestore.DetectProjectID
-	if !swag.IsZero(ProjectID) {
-		projectID = ProjectID
+	if !swag.IsZero(projectID) {
+		projectID = util.ProjectID()
 	}
 	client, err := firestore.NewClient(ctx, projectID, clientOption())
 	if err != nil {

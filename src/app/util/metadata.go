@@ -1,9 +1,10 @@
-package googlecloud
+package util
 
 import (
 	"context"
 	"io"
 	"net/http"
+	"os"
 	"sync"
 	"time"
 )
@@ -45,7 +46,17 @@ func init() {
 	})
 }
 
-// InstanceMetadata returns container instance metadata
+func ProjectID() string {
+	if candidate, found := os.LookupEnv("GOOGLE_CLOUD_PROJECT"); found {
+		return candidate
+	}
+	meta := InstanceMetadata(context.Background())
+	if value, ok := meta["project_id"]; ok {
+		return value
+	}
+	panic("project id was not found")
+}
+
 func InstanceMetadata(ctx context.Context) map[string]string {
 	client := &http.Client{
 		Transport: &http.Transport{MaxIdleConnsPerHost: len(meta)},
@@ -60,7 +71,8 @@ func InstanceMetadata(ctx context.Context) map[string]string {
 			defer wg.Done()
 
 			url := gceInstanceMetadataPrefix + meta.URI
-			if body, err := get(ctx, client, url, flavor); err == nil {
+			body, err := get(ctx, client, url, flavor)
+			if err == nil {
 				result[meta.Key] = string(body)
 			}
 		}(m)

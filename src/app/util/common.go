@@ -8,15 +8,15 @@ import (
 )
 
 var (
-	Date string
-	jst  *time.Location
+	Location  = "asia-northeast1"
+	Zone      = "asia-northeast1-c"
+	BuildDate string
+	jst       *time.Location
 )
 
 const format = "2006 年 01 月 02 日 15:04:05"
 
 func init() {
-	jst, _ = time.LoadLocation("Asia/Tokyo")
-
 	logger.LogFunctionMap["stdoutjson"] =
 		func(c *logger.CompositeMultiHandler, options *logger.LogOptions) {
 			c.SetJson(os.Stdout, options)
@@ -25,6 +25,7 @@ func init() {
 		func(c *logger.CompositeMultiHandler, options *logger.LogOptions) {
 			c.SetJson(os.Stderr, options)
 		}
+	jst, _ = time.LoadLocation("Asia/Tokyo")
 }
 
 func DateToStr(value time.Time) string {

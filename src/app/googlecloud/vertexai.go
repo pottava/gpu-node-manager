@@ -6,6 +6,7 @@ import (
 
 	notebooks "cloud.google.com/go/notebooks/apiv1"
 	notebookspb "cloud.google.com/go/notebooks/apiv1/notebookspb"
+	"github.com/pottava/gpu-node-manager/src/app/util"
 )
 
 func CreateNotebook(ctx context.Context, name, email, menu string) error {
@@ -18,7 +19,7 @@ func CreateNotebook(ctx context.Context, name, email, menu string) error {
 	// @see https://cloud.google.com/deep-learning-vm/docs/images
 	// $ gcloud compute images list --project deeplearning-platform-release
 	req := &notebookspb.CreateInstanceRequest{
-		Parent:     fmt.Sprintf("projects/%s/locations/%s", ProjectID, Zone),
+		Parent:     fmt.Sprintf("projects/%s/locations/%s", util.ProjectID(), util.Zone),
 		InstanceId: name,
 		Instance: &notebookspb.Instance{
 			Environment: &notebookspb.Instance_VmImage{
@@ -85,7 +86,7 @@ func CreateManagedNotebook(ctx context.Context, name, email, menu string) error 
 		},
 	}
 	req := &notebookspb.CreateRuntimeRequest{
-		Parent:    fmt.Sprintf("projects/%s/locations/%s", ProjectID, Location),
+		Parent:    fmt.Sprintf("projects/%s/locations/%s", util.ProjectID(), util.Location),
 		RuntimeId: name,
 		Runtime: &notebookspb.Runtime{
 			RuntimeType: runtime,
@@ -132,7 +133,7 @@ func DescribeManagedNotebook(ctx context.Context, name string) (*notebookspb.Run
 	defer client.Close()
 
 	req := &notebookspb.GetRuntimeRequest{
-		Name: fmt.Sprintf("projects/%s/locations/%s/runtimes/%s", ProjectID, Location, name),
+		Name: fmt.Sprintf("projects/%s/locations/%s/runtimes/%s", util.ProjectID(), util.Location, name),
 	}
 	return client.GetRuntime(ctx, req)
 }
@@ -145,7 +146,7 @@ func StartManagedNotebook(ctx context.Context, name string) error {
 	defer client.Close()
 
 	_, err = client.StartRuntime(ctx, &notebookspb.StartRuntimeRequest{
-		Name: fmt.Sprintf("projects/%s/locations/%s/runtimes/%s", ProjectID, Location, name),
+		Name: fmt.Sprintf("projects/%s/locations/%s/runtimes/%s", util.ProjectID(), util.Location, name),
 	})
 	return err
 }
@@ -158,7 +159,7 @@ func StopManagedNotebook(ctx context.Context, name string) error {
 	defer client.Close()
 
 	_, err = client.StopRuntime(ctx, &notebookspb.StopRuntimeRequest{
-		Name: fmt.Sprintf("projects/%s/locations/%s/runtimes/%s", ProjectID, Location, name),
+		Name: fmt.Sprintf("projects/%s/locations/%s/runtimes/%s", util.ProjectID(), util.Location, name),
 	})
 	return err
 }
@@ -171,7 +172,7 @@ func DeleteManagedNotebook(ctx context.Context, name string) error {
 	defer client.Close()
 
 	_, err = client.DeleteRuntime(ctx, &notebookspb.DeleteRuntimeRequest{
-		Name: fmt.Sprintf("projects/%s/locations/%s/runtimes/%s", ProjectID, Location, name),
+		Name: fmt.Sprintf("projects/%s/locations/%s/runtimes/%s", util.ProjectID(), util.Location, name),
 	})
 	return err
 }

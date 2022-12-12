@@ -17,11 +17,11 @@ func (c App) Health() revel.Result {
 	if candidate, found := os.LookupEnv("K_REVISION"); found {
 		revision = candidate
 	}
-	if len(util.Date) == 0 {
+	if len(util.BuildDate) == 0 {
 		return c.RenderText(fmt.Sprintf("Revision: %s\n", revision))
 	}
 	return c.RenderText(fmt.Sprintf(
-		"Revision: %s (built at %s)\n", revision, util.Date))
+		"Revision: %s (built at %s)\n", revision, util.BuildDate))
 }
 
 func (c App) Login() revel.Result {

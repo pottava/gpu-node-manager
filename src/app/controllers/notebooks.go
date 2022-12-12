@@ -3,6 +3,7 @@ package controllers
 import (
 	"errors"
 	"fmt"
+	"log"
 	"net/http"
 	"regexp"
 	"strings"
@@ -96,6 +97,8 @@ func (c Notebooks) CreateAPI() revel.Result {
 		Menu string `json:"menu"`
 	}{}
 	c.Params.BindJSON(&params)
+
+	log.Printf("projects/%s/locations/%s", util.ProjectID(), util.Location)
 
 	if err = gc.CreateManagedNotebook(ctx, name, email, params.Menu); err != nil {
 		c.Log.Errorf("Failed to create a notebook: %v", err)
