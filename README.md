@@ -49,9 +49,9 @@ gcloud firestore databases create --region "asia-northeast1"
 
 https://console.firebase.google.com/
 
-- "Authentication" の認証としてメールアドレス / パスワードを有効化
-- "Authentication" の Users にユーザーを登録
-- "プロジェクトの設定" で確認できる内容を src/public/js/app/firebase.js に保存
+1. "Authentication" の認証、もしくは [Identity Platform: ID プロバイダ](https://console.cloud.google.com/customer-identity/providers) からメールアドレス / パスワードを有効化
+2. "Authentication" の Users、もしくは [Identity Platform: ユーザー](https://console.cloud.google.com/customer-identity/users) からユーザーを登録
+3. "プロジェクトの設定" で確認できる内容を src/public/js/app/firebase.js に保存
 
 ```sh
 firebase.initializeApp({
@@ -124,3 +124,5 @@ CI/CD パイプラインの環境変数に以下の値を設定します。
 - GOOGLECLOUD_PROJECT: プロジェクト ID
 - GOOGLECLOUD_SA_KEY: デプロイするためのサービス アカウント
 - GOOGLECLOUD_FIREBASE: Firebase の設定 JSON
+
+設定後、git push により開発環境の Cloud Run が更新されることを確認してください。
