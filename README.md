@@ -13,7 +13,8 @@ cd gpu-node-manager/
 gcloud services enable compute.googleapis.com iamcredentials.googleapis.com \
     cloudresourcemanager.googleapis.com firestore.googleapis.com \
     cloudbuild.googleapis.com appengine.googleapis.com run.googleapis.com \
-    artifactregistry.googleapis.com containerscanning.googleapis.com
+    artifactregistry.googleapis.com containerscanning.googleapis.com \
+    notebooks.googleapis.com aiplatform.googleapis.com
 ```
 
 ### Cloud IAM

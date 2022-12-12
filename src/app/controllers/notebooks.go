@@ -50,17 +50,18 @@ func (c Notebooks) ListAPI() revel.Result {
 	}
 	results := []*Result{}
 	for _, note := range notebooks {
-		if !note.Active {
-			results = append(results, &Result{
-				Menu:      note.Menu,
-				Runtime:   note.Runtime,
-				ProxyUri:  "",
-				State:     "DELETED",
-				CreatedAt: util.DateToStr(note.CreatedAt),
-			})
-		}
 		runtime, err := gc.DescribeManagedNotebook(c.Request.Context(), note.Runtime)
-		if err == nil {
+		if err != nil {
+			if !note.Active {
+				results = append(results, &Result{
+					Menu:      note.Menu,
+					Runtime:   note.Runtime,
+					ProxyUri:  "",
+					State:     "DELETED",
+					CreatedAt: util.DateToStr(note.CreatedAt),
+				})
+			}
+		} else {
 			results = append(results, &Result{
 				Menu:      note.Menu,
 				Runtime:   note.Runtime,
