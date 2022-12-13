@@ -28,11 +28,8 @@ jobs:
     - name: 'Set up Cloud SDK'
       uses: 'google-github-actions/setup-gcloud@v1'
 
-    - name: 'Update the .gitignore'
-      run: echo -e 'target/\ntest-results/\ntmp/\nroutes/\nkey.json' > src/.gitignore
-
-    - name: 'Update the API base URL'
-      run: echo "window.apiBaseURL = \"$(gcloud run services describe dev --region ${{ env.GOOGLECLOUD_REGION }} --format 'value(status.address.url)' )\";" > src/public/js/app/config.js
+    - name: 'Update configs'
+      run: ./deploy/pre-build.sh ${{ env.GOOGLECLOUD_REGION }}
 
     - name: 'Create the firebase.js'
       run: echo "${{ secrets.GOOGLECLOUD_FIREBASE }}" > src/public/js/app/firebase.js

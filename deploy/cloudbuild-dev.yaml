@@ -1,0 +1,25 @@
+steps:
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: bash
+    args: ['deploy/pre-build.sh', 'asia-northeast1']
+
+  - name: bash
+    script: echo "${FIREBASE_JS}" > src/public/js/app/firebase.js
+    secretEnv: ['FIREBASE_JS']
+
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'asia-northeast1-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/web-console:$COMMIT_SHA', 'src']
+
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'asia-northeast1-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/web-console:$COMMIT_SHA']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args: ['run', 'deploy', 'dev', '--region=asia-northeast1',
+      '--image=asia-northeast1-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/web-console:$COMMIT_SHA',
+      '--service-account=app-client@$PROJECT_ID.iam.gserviceaccount.com']
+
+availableSecrets:
+  secretManager:
+  - versionName: projects/$PROJECT_ID/secrets/firebase-configs/versions/latest
+    env: 'FIREBASE_JS'
