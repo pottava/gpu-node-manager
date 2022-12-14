@@ -1,7 +1,7 @@
 steps:
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: bash
-    args: ['deploy/pre-build.sh', 'dev', 'asia-northeast1']
+    args: ['deploy/pre-build.sh', 'prod', 'asia-northeast1']
 
   - name: bash
     script: echo "${FIREBASE_JS}" > src/public/js/app/firebase.js
@@ -15,7 +15,7 @@ steps:
 
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: gcloud
-    args: ['run', 'deploy', 'dev', '--region=asia-northeast1',
+    args: ['run', 'deploy', 'prod', '--region=asia-northeast1',
       '--image=asia-northeast1-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/web-console:$COMMIT_SHA',
       '--service-account=app-client@$PROJECT_ID.iam.gserviceaccount.com']
 
