@@ -36,6 +36,9 @@ gcloud projects add-iam-policy-binding "${project_id}" \
 gcloud projects add-iam-policy-binding "${project_id}" \
     --member "serviceAccount:app-client@${project_id}.iam.gserviceaccount.com" \
     --role "roles/resourcemanager.projectIamAdmin"
+gcloud projects add-iam-policy-binding "${project_id}" \
+    --member "serviceAccount:app-client@${project_id}.iam.gserviceaccount.com" \
+    --role "roles/firebaseauth.admin"
 ```
 
 ### Cloud Firestore
