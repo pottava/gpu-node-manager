@@ -1,6 +1,7 @@
 package util
 
 import (
+	"context"
 	"os"
 	"time"
 
@@ -26,6 +27,31 @@ func init() {
 			c.SetJson(os.Stderr, options)
 		}
 	jst, _ = time.LoadLocation("Asia/Tokyo")
+}
+
+func ProjectID() string {
+	if candidate, found := os.LookupEnv("GOOGLE_CLOUD_PROJECT"); found {
+		return candidate
+	}
+	meta := InstanceMetadata(context.Background())
+	if value, ok := meta["project_id"]; ok {
+		return value
+	}
+	panic("project id was not found")
+}
+
+func RunRevision() string {
+	if candidate, found := os.LookupEnv("K_REVISION"); found {
+		return candidate
+	}
+	return "local"
+}
+
+func AppStage() string {
+	if candidate, found := os.LookupEnv("STAGE"); found {
+		return candidate
+	}
+	return "local"
 }
 
 func DateToStr(value time.Time) string {

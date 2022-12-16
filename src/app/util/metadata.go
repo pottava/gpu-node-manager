@@ -4,7 +4,6 @@ import (
 	"context"
 	"io"
 	"net/http"
-	"os"
 	"sync"
 	"time"
 )
@@ -44,17 +43,6 @@ func init() {
 		Key: "email",
 		URI: "/instance/service-accounts/default/email",
 	})
-}
-
-func ProjectID() string {
-	if candidate, found := os.LookupEnv("GOOGLE_CLOUD_PROJECT"); found {
-		return candidate
-	}
-	meta := InstanceMetadata(context.Background())
-	if value, ok := meta["project_id"]; ok {
-		return value
-	}
-	panic("project id was not found")
 }
 
 func InstanceMetadata(ctx context.Context) map[string]string {

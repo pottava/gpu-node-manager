@@ -22,7 +22,8 @@ func (c Notebooks) Index() revel.Result {
 }
 
 func (c Notebooks) Create() revel.Result {
-	return c.Render()
+	isNotProduction := (util.AppStage() != "prod")
+	return c.Render(isNotProduction)
 }
 
 func (c Notebooks) ListAPI() revel.Result {
@@ -52,7 +53,15 @@ func (c Notebooks) ListAPI() revel.Result {
 	for _, note := range notebooks {
 		runtime, err := gc.DescribeManagedNotebook(c.Request.Context(), note.Runtime)
 		if err != nil {
-			if !note.Active {
+			if note.Active {
+				results = append(results, &Result{
+					Menu:      note.Menu,
+					Runtime:   note.Runtime,
+					ProxyUri:  "",
+					State:     err.Error(),
+					CreatedAt: util.DateToStr(note.CreatedAt),
+				})
+			} else {
 				results = append(results, &Result{
 					Menu:      note.Menu,
 					Runtime:   note.Runtime,
@@ -61,15 +70,15 @@ func (c Notebooks) ListAPI() revel.Result {
 					CreatedAt: util.DateToStr(note.CreatedAt),
 				})
 			}
-		} else {
-			results = append(results, &Result{
-				Menu:      note.Menu,
-				Runtime:   note.Runtime,
-				ProxyUri:  runtime.AccessConfig.ProxyUri,
-				State:     runtime.State.String(),
-				CreatedAt: util.DateToStr(note.CreatedAt),
-			})
+			continue
 		}
+		results = append(results, &Result{
+			Menu:      note.Menu,
+			Runtime:   note.Runtime,
+			ProxyUri:  runtime.AccessConfig.ProxyUri,
+			State:     runtime.State.String(),
+			CreatedAt: util.DateToStr(note.CreatedAt),
+		})
 	}
 	return c.RenderJSON(results)
 }
@@ -97,6 +106,7 @@ func (c Notebooks) CreateAPI() revel.Result {
 	}{}
 	c.Params.BindJSON(&params)
 
+	// Create a managed notebook
 	if err = gc.CreateManagedNotebook(ctx, name, email, params.Menu); err != nil {
 		c.Log.Errorf("Failed to create a notebook: %v", err)
 		c.Response.SetStatus(http.StatusInternalServerError)
@@ -107,6 +117,7 @@ func (c Notebooks) CreateAPI() revel.Result {
 		c.Response.SetStatus(http.StatusInternalServerError)
 		return c.RenderError(errors.New("内部エラー"))
 	}
+	// Save a record to Firestore
 	if err = gc.SaveNotebook(ctx, name, email, params.Menu); err != nil {
 		c.Log.Errorf("Failed to save a notebook: %v", err)
 		c.Response.SetStatus(http.StatusInternalServerError)
@@ -131,11 +142,13 @@ func (c Notebooks) UpdateAPI() revel.Result {
 	}{}
 	c.Params.BindJSON(&params)
 
+	// Check its owner
 	if _, err = gc.GetNotebook(ctx, email, params.ID); err != nil {
 		c.Log.Errorf("Failed to find the notebook: %v (name: %s)", err, params.ID)
 		c.Response.SetStatus(http.StatusNotFound)
 		return c.RenderError(errors.New("扱えるノートがありません"))
 	}
+	// Stop and start the notebook
 	switch params.Action {
 	case "start":
 		if err = gc.StartManagedNotebook(ctx, params.ID); err != nil {
@@ -168,17 +181,20 @@ func (c Notebooks) DeleteAPI() revel.Result {
 	}{}
 	c.Params.BindJSON(&params)
 
+	// Check its owner
 	note, err := gc.GetNotebook(ctx, email, params.ID)
 	if err != nil {
 		c.Log.Errorf("Failed to find the notebook: %v (name: %s)", err, params.ID)
 		c.Response.SetStatus(http.StatusNotFound)
 		return c.RenderError(errors.New("扱えるノートがありません"))
 	}
+	// Delete the notebook
 	if err = gc.DeleteManagedNotebook(ctx, params.ID); err != nil {
 		c.Log.Errorf("Failed to delete the notebook instance: %v (name: %s)", err, params.ID)
 		c.Response.SetStatus(http.StatusInternalServerError)
 		return c.RenderError(errors.New("内部エラー"))
 	}
+	// Update the record
 	deactivate := map[string]interface{}{
 		"active": false,
 	}

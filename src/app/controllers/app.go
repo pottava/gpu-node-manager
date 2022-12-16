@@ -50,18 +50,10 @@ func (c App) ContextAPI() revel.Result {
 		Revision string `json:"rev"`
 		User     string `json:"usr"`
 	}
-	revision := "local"
-	if candidate, found := os.LookupEnv("K_REVISION"); found {
-		revision = candidate
-	}
-	stage := "local"
-	if candidate, found := os.LookupEnv("STAGE"); found {
-		stage = candidate
-	}
 	results := &Result{
 		Project:  util.ProjectID(),
-		Stage:    stage,
-		Revision: revision,
+		Stage:    util.AppStage(),
+		Revision: util.RunRevision(),
 		User:     email,
 	}
 	return c.RenderJSON(results)

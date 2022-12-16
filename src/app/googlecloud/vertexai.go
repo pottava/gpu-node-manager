@@ -6,65 +6,9 @@ import (
 
 	notebooks "cloud.google.com/go/notebooks/apiv1"
 	notebookspb "cloud.google.com/go/notebooks/apiv1/notebookspb"
+	"github.com/go-openapi/swag"
 	"github.com/pottava/gpu-node-manager/src/app/util"
 )
-
-func CreateNotebook(ctx context.Context, name, email, menu string) error {
-	client, err := notebooks.NewNotebookClient(ctx, clientOption())
-	if err != nil {
-		return err
-	}
-	defer client.Close()
-
-	// @see https://cloud.google.com/deep-learning-vm/docs/images
-	// $ gcloud compute images list --project deeplearning-platform-release
-	req := &notebookspb.CreateInstanceRequest{
-		Parent:     fmt.Sprintf("projects/%s/locations/%s", util.ProjectID(), util.Zone),
-		InstanceId: name,
-		Instance: &notebookspb.Instance{
-			Environment: &notebookspb.Instance_VmImage{
-				VmImage: &notebookspb.VmImage{
-					Project: "deeplearning-platform-release",
-					Image: &notebookspb.VmImage_ImageFamily{
-						ImageFamily: "tf-ent-2-10-cu113",
-					},
-				},
-			},
-			InstanceOwners:   []string{name},
-			InstallGpuDriver: true,
-			DataDiskType:     notebookspb.Instance_PD_SSD,
-			DataDiskSizeGb:   300,
-		},
-	}
-	switch menu {
-	case "t4-01": // NVIDIA T4 1 基 + Intel 2 vCPU
-		req.Instance.MachineType = "n1-standard-2"
-		req.Instance.AcceleratorConfig = &notebookspb.Instance_AcceleratorConfig{
-			Type:      notebookspb.Instance_NVIDIA_TESLA_T4,
-			CoreCount: 1,
-		}
-	case "t4-02": //NVIDIA T4 1 基 + Intel 4 vCPU
-		req.Instance.MachineType = "n1-highmem-4"
-		req.Instance.AcceleratorConfig = &notebookspb.Instance_AcceleratorConfig{
-			Type:      notebookspb.Instance_NVIDIA_TESLA_T4,
-			CoreCount: 1,
-		}
-	case "a100-01": // NVIDIA A100 1 基 + Intel 12 vCPU
-		req.Instance.MachineType = "a2-highgpu-1g"
-		req.Instance.AcceleratorConfig = &notebookspb.Instance_AcceleratorConfig{
-			Type:      notebookspb.Instance_NVIDIA_TESLA_A100,
-			CoreCount: 1,
-		}
-	case "a100-02": // NVIDIA A100 4 基 + Intel 24 vCPU
-		req.Instance.MachineType = "a2-highgpu-4g"
-		req.Instance.AcceleratorConfig = &notebookspb.Instance_AcceleratorConfig{
-			Type:      notebookspb.Instance_NVIDIA_TESLA_A100,
-			CoreCount: 4,
-		}
-	}
-	_, err = client.CreateInstance(ctx, req)
-	return err
-}
 
 func CreateManagedNotebook(ctx context.Context, name, email, menu string) error {
 	client, err := notebooks.NewManagedNotebookClient(ctx, clientOption())
@@ -92,7 +36,8 @@ func CreateManagedNotebook(ctx context.Context, name, email, menu string) error 
 			RuntimeType: runtime,
 			SoftwareConfig: &notebookspb.RuntimeSoftwareConfig{
 				InstallGpuDriver:    true,
-				IdleShutdownTimeout: 30,
+				IdleShutdown:        swag.Bool(true),
+				IdleShutdownTimeout: 10,
 			},
 			AccessConfig: &notebookspb.RuntimeAccessConfig{
 				AccessType:   notebookspb.RuntimeAccessConfig_SINGLE_USER,
@@ -101,6 +46,9 @@ func CreateManagedNotebook(ctx context.Context, name, email, menu string) error 
 		},
 	}
 	switch menu {
+	case "cpu-01": // Intel 2 vCPU
+		runtime.VirtualMachine.VirtualMachineConfig.MachineType = "n1-standard-2"
+
 	case "t4-01": // NVIDIA T4 1 基 + Intel 2 vCPU
 		runtime.VirtualMachine.VirtualMachineConfig.MachineType = "n1-standard-2"
 		runtime.VirtualMachine.VirtualMachineConfig.AcceleratorConfig = &notebookspb.RuntimeAcceleratorConfig{
@@ -115,6 +63,12 @@ func CreateManagedNotebook(ctx context.Context, name, email, menu string) error 
 		}
 	case "a100-01": // NVIDIA A100 1 基 + Intel 12 vCPU
 		runtime.VirtualMachine.VirtualMachineConfig.MachineType = "a2-highgpu-1g"
+		runtime.VirtualMachine.VirtualMachineConfig.AcceleratorConfig = &notebookspb.RuntimeAcceleratorConfig{
+			Type:      notebookspb.RuntimeAcceleratorConfig_NVIDIA_TESLA_A100,
+			CoreCount: 1,
+		}
+	case "a100-02": // NVIDIA A100 2 基 + Intel 24 vCPU
+		runtime.VirtualMachine.VirtualMachineConfig.MachineType = "a2-highgpu-2g"
 		runtime.VirtualMachine.VirtualMachineConfig.AcceleratorConfig = &notebookspb.RuntimeAcceleratorConfig{
 			Type:      notebookspb.RuntimeAcceleratorConfig_NVIDIA_TESLA_A100,
 			CoreCount: 1,

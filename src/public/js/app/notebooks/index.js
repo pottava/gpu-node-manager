@@ -36,7 +36,7 @@ function getNotebooks (token) {
               html += '</button>';
             html += '</h5>';
           html += '</div>';
-          html += '<div id="collapse-' + item.runtime + '" class="collapse' + ((idx == 0) ? ' show' : '' )+ '" aria-labelledby="head-' + item.runtime + '" data-parent="#results">';
+          html += '<div id="collapse-' + item.runtime + '" class="collapse" aria-labelledby="head-' + item.runtime + '" data-parent="#results">';
             html += '<div class="card-body">';
               html += '種別: '+ menu + '<br>';
               html += '状態: '+ item.state + '<br>';
