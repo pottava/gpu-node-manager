@@ -17,7 +17,8 @@ steps:
     entrypoint: gcloud
     args: ['run', 'deploy', 'dev', '--region=asia-northeast1',
       '--image=asia-northeast1-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/web-console:$COMMIT_SHA',
-      '--service-account=app-client@$PROJECT_ID.iam.gserviceaccount.com']
+      '--service-account=app-client@$PROJECT_ID.iam.gserviceaccount.com',
+      '--set-env-vars=STAGE=dev']
 
 availableSecrets:
   secretManager:

@@ -46,6 +46,7 @@ func (c App) ContextAPI() revel.Result {
 
 	type Result struct {
 		Project  string `json:"prj"`
+		Stage    string `json:"stg"`
 		Revision string `json:"rev"`
 		User     string `json:"usr"`
 	}
@@ -53,8 +54,13 @@ func (c App) ContextAPI() revel.Result {
 	if candidate, found := os.LookupEnv("K_REVISION"); found {
 		revision = candidate
 	}
+	stage := "local"
+	if candidate, found := os.LookupEnv("STAGE"); found {
+		stage = candidate
+	}
 	results := &Result{
 		Project:  util.ProjectID(),
+		Stage:    stage,
 		Revision: revision,
 		User:     email,
 	}
