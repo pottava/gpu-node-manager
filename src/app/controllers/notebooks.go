@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"regexp"
 	"strings"
+	"sync"
 	"time"
 
 	gc "github.com/pottava/gpu-node-manager/src/app/googlecloud"
@@ -50,36 +51,42 @@ func (c Notebooks) ListAPI() revel.Result {
 		CreatedAt string `json:"created_at"`
 	}
 	results := []*Result{}
+	wg := &sync.WaitGroup{}
+	wg.Add(len(notebooks))
 	for _, note := range notebooks {
-		runtime, err := gc.DescribeManagedNotebook(c.Request.Context(), note.Runtime)
-		if err != nil {
-			if note.Active {
+		go func(note *gc.Notebook) {
+			runtime, err := gc.DescribeManagedNotebook(c.Request.Context(), note.Runtime)
+			if err == nil {
 				results = append(results, &Result{
 					Menu:      note.Menu,
 					Runtime:   note.Runtime,
-					ProxyUri:  "",
-					State:     err.Error(),
+					ProxyUri:  runtime.AccessConfig.ProxyUri,
+					State:     runtime.State.String(),
 					CreatedAt: util.DateToStr(note.CreatedAt),
 				})
 			} else {
-				results = append(results, &Result{
-					Menu:      note.Menu,
-					Runtime:   note.Runtime,
-					ProxyUri:  "",
-					State:     "DELETED",
-					CreatedAt: util.DateToStr(note.CreatedAt),
-				})
+				if note.Active {
+					results = append(results, &Result{
+						Menu:      note.Menu,
+						Runtime:   note.Runtime,
+						ProxyUri:  "",
+						State:     err.Error(),
+						CreatedAt: util.DateToStr(note.CreatedAt),
+					})
+				} else {
+					results = append(results, &Result{
+						Menu:      note.Menu,
+						Runtime:   note.Runtime,
+						ProxyUri:  "",
+						State:     "DELETED",
+						CreatedAt: util.DateToStr(note.CreatedAt),
+					})
+				}
 			}
-			continue
-		}
-		results = append(results, &Result{
-			Menu:      note.Menu,
-			Runtime:   note.Runtime,
-			ProxyUri:  runtime.AccessConfig.ProxyUri,
-			State:     runtime.State.String(),
-			CreatedAt: util.DateToStr(note.CreatedAt),
-		})
+			wg.Done()
+		}(note)
 	}
+	wg.Wait()
 	return c.RenderJSON(results)
 }
 
