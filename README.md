@@ -38,6 +38,9 @@ gcloud projects add-iam-policy-binding "${project_id}" \
     --role "roles/resourcemanager.projectIamAdmin"
 gcloud projects add-iam-policy-binding "${project_id}" \
     --member "serviceAccount:app-client@${project_id}.iam.gserviceaccount.com" \
+    --role "roles/storage.admin"
+gcloud projects add-iam-policy-binding "${project_id}" \
+    --member "serviceAccount:app-client@${project_id}.iam.gserviceaccount.com" \
     --role "roles/firebaseauth.admin"
 ```
 

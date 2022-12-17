@@ -124,6 +124,20 @@ func (c Notebooks) CreateAPI() revel.Result {
 		c.Response.SetStatus(http.StatusInternalServerError)
 		return c.RenderError(errors.New("内部エラー"))
 	}
+	// Create a storage bucket
+	name = fmt.Sprintf("bucket-users-%s",
+		strings.ToLower(re.ReplaceAllString(strings.Split(email, "@")[0], "")),
+	)
+	if err = gc.MakeBucket(ctx, name); err != nil {
+		c.Log.Errorf("Failed to create a bucket: %v", err)
+		c.Response.SetStatus(http.StatusInternalServerError)
+		return c.RenderError(errors.New("内部エラー"))
+	}
+	if err = gc.AddRoleToBucket(ctx, name, "user:"+email, "storage.objectAdmin"); err != nil {
+		c.Log.Errorf("Failed to bind a role to the user: %v", err)
+		c.Response.SetStatus(http.StatusInternalServerError)
+		return c.RenderError(errors.New("内部エラー"))
+	}
 	// Save a record to Firestore
 	if err = gc.SaveNotebook(ctx, name, email, params.Menu); err != nil {
 		c.Log.Errorf("Failed to save a notebook: %v", err)
