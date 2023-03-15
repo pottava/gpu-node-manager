@@ -20,6 +20,13 @@ POST    /api/notebooks                          Notebooks.CreateAPI
 PUT     /api/notebooks                          Notebooks.UpdateAPI
 DELETE  /api/notebooks                          Notebooks.DeleteAPI
 
+GET     /vms                                    VMs.Index
+GET     /vms/new                                VMs.Create
+GET     /api/vms                                VMs.ListAPI
+POST    /api/vms                                VMs.CreateAPI
+PUT     /api/vms                                VMs.UpdateAPI
+DELETE  /api/vms                                VMs.DeleteAPI
+
 # Ignore favicon requests
 GET     /favicon.ico                            404
 

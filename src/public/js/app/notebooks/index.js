@@ -24,9 +24,11 @@ function getNotebooks (token) {
 
         let menu = '';
         switch (item.menu) {
+          case 'cpu-01': menu = 'Intel 2 vCPU'; break;
           case 't4-01': menu = 'NVIDIA T4 1 基 + Intel 2 vCPU'; break;
           case 't4-02': menu = 'NVIDIA T4 1 基 + Intel 4 vCPU'; break;
           case 'a100-01': menu = 'NVIDIA A100 1 基 + Intel 12 vCPU'; break;
+          case 'a100-02': menu = 'NVIDIA A100 2 基 + Intel 24 vCPU'; break;
         }
         html += '<div class="card">';
           html += '<div class="card-header" id="head-' + item.runtime + '">';
@@ -65,6 +67,9 @@ function getNotebooks (token) {
                 html += '<button class="btn btn-danger" data-toggle="modal" data-target="#notebook-modal"';
                   html += 'data-type="delete" data-menu="' + item.runtime + '" style="margin-top: 10px;">';
                   html += '<span>削除</span></button>';
+                break;
+              case 'DELETED':
+                html += '削除: '+ item.updated_at;
                 break;
               }
             html += '</div>';

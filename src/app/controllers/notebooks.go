@@ -49,6 +49,7 @@ func (c Notebooks) ListAPI() revel.Result {
 		ProxyUri  string `json:"proxyUri"`
 		State     string `json:"state"`
 		CreatedAt string `json:"created_at"`
+		UpdatedAt string `json:"updated_at"`
 	}
 	results := []*Result{}
 	wg := &sync.WaitGroup{}
@@ -63,6 +64,7 @@ func (c Notebooks) ListAPI() revel.Result {
 					ProxyUri:  runtime.AccessConfig.ProxyUri,
 					State:     runtime.State.String(),
 					CreatedAt: util.DateToStr(note.CreatedAt),
+					UpdatedAt: util.DateToStr(note.UpdatedAt),
 				})
 			} else {
 				if note.Active {
@@ -72,6 +74,7 @@ func (c Notebooks) ListAPI() revel.Result {
 						ProxyUri:  "",
 						State:     err.Error(),
 						CreatedAt: util.DateToStr(note.CreatedAt),
+						UpdatedAt: util.DateToStr(note.UpdatedAt),
 					})
 				} else {
 					results = append(results, &Result{
@@ -80,6 +83,7 @@ func (c Notebooks) ListAPI() revel.Result {
 						ProxyUri:  "",
 						State:     "DELETED",
 						CreatedAt: util.DateToStr(note.CreatedAt),
+						UpdatedAt: util.DateToStr(note.UpdatedAt),
 					})
 				}
 			}

@@ -47,7 +47,7 @@ func CreateManagedNotebook(ctx context.Context, name, email, menu string) error 
 	}
 	switch menu {
 	case "cpu-01": // Intel 2 vCPU
-		runtime.VirtualMachine.VirtualMachineConfig.MachineType = "n1-standard-2"
+		runtime.VirtualMachine.VirtualMachineConfig.MachineType = "n2-standard-2"
 
 	case "t4-01": // NVIDIA T4 1 基 + Intel 2 vCPU
 		runtime.VirtualMachine.VirtualMachineConfig.MachineType = "n1-standard-2"

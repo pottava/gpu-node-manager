@@ -1,0 +1,70 @@
+{{set . "title" "GPU 仮想マシン 作成"}}
+{{append . "scripts" "/public/js/app/vms/create.js"}}
+{{template "header.html" .}}
+
+<div class="container">
+    <H1>利用可能な GPU 仮想マシン</H1><br>
+
+    <div id="accordion">
+      {{if .isNotProduction}}
+      <div class="card">
+        <div class="card-header" id="head-cpu-01">
+          <h5 class="mb-0">
+            <button class="btn btn-link" data-toggle="collapse" data-target="#collapse-cpu-01" aria-expanded="false" aria-controls="collapse-cpu-01">
+              Intel 2 vCPU
+            </button>
+          </h5>
+        </div>
+        <div id="collapse-cpu-01" class="collapse" aria-labelledby="head-cpu-01" data-parent="#accordion">
+          <div class="card-body">
+            2 vCPU, 8 GB RAM, 300 GB SSD
+            <br>
+            <button class="btn btn-primary" data-toggle="modal" data-target="#vm-modal"
+                data-menu="cpu-01" style="margin-top: 10px;"><span>起動</span></button>
+          </div>
+        </div>
+      </div>
+      {{end}}
+        <div class="card">
+          <div class="card-header" id="head-t4-01">
+            <h5 class="mb-0">
+              <button class="btn btn-link" data-toggle="collapse" data-target="#collapse-t4-01" aria-expanded="false" aria-controls="collapse-t4-01">
+                NVIDIA T4 1 基 + Intel 2 vCPU
+              </button>
+            </h5>
+          </div>
+          <div id="collapse-t4-01" class="collapse" aria-labelledby="head-t4-01" data-parent="#accordion">
+            <div class="card-body">
+              2 vCPU, 7.5 GB RAM, 300 GB SSD
+              <br>
+              <button class="btn btn-primary" data-toggle="modal" data-target="#vm-modal"
+                  data-menu="t4-01" style="margin-top: 10px;"><span>起動</span></button>
+            </div>
+          </div>
+        </div>
+    </div>
+</div>
+
+<div id="vm-modal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+                  style="float: right;display: block;">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            <h4 class="modal-title">確認</h4>
+        </div>
+        <div class="modal-body">
+            <input id="vm-menu-id" type="hidden">
+            <p><h4 id="vm-menu"></h4><br>GPU 仮想マシンを作成します。よろしいですか？</p>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-primary" data-bind="click: create">作成</button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">キャンセル</button>
+        </div>
+        </div>
+    </div>
+</div>
+
+{{template "footer.html" .}}

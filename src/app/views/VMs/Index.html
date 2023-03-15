@@ -1,0 +1,45 @@
+{{set . "title" "GPU 仮想マシン 一覧"}}
+{{append . "scripts" "/public/js/app/vms/index.js"}}
+{{template "header.html" .}}
+
+<div style="float: right;margin: 20px 50px 0 0;">
+  <button type="button" class="btn btn-primary"
+      onclick="location.href='/vms/new'">
+    <span class="material-symbols-outlined">
+      add
+    </span>
+  </button>
+</div>
+
+<div class="container">
+  <H1>GPU 仮想マシン</H1><br>
+  <ul id="results" class="list-group"></ul>
+</div>
+
+<div id="vm-modal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+                  style="float: right;display: block;">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            <h4 class="modal-title">確認</h4>
+        </div>
+        <div class="modal-body">
+            <input id="request-type" type="hidden">
+            <input id="vm-id" type="hidden">
+            <div id="vm">
+              <h4></h4><br>
+              GPU 仮想マシンを <span style="font-weight: bold;color: rgb(255, 75, 75);"></span> します。よろしいですか？
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-primary">OK</button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">キャンセル</button>
+        </div>
+        </div>
+    </div>
+</div>
+
+{{template "footer.html" .}}
